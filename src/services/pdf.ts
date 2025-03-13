@@ -416,7 +416,7 @@ const generateItemsHTML = (quotation: Quotation): string => {
     // Verifica se há uma categoria no início da descrição (formato: "CATEGORIA - descrição")
     const parts = item.description.split(' - ');
     const category = parts.length > 1 ? parts[0] : '';
-    const description = parts.length > 1 ? parts.slice(1).join(' - ') : item.description;
+    //const description = parts.length > 1 ? parts.slice(1).join(' - ') : item.description;
 
     // Se for uma nova categoria, adiciona uma linha de categoria
     if (category && category !== currentCategory) {

@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom';
 
 import { 
   FiHome, 
-  FiFileText, 
   FiPlus, 
   FiList, 
   FiUsers, 

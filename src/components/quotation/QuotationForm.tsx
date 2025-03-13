@@ -1,6 +1,6 @@
 // src/components/quotation/QuotationForm.tsx
 import React, { useState, useEffect } from 'react';
-import { FiSave, FiPlus, FiTrash, FiDollarSign, FiUser, FiCalendar } from 'react-icons/fi';
+import { FiSave, FiPlus, FiDollarSign, FiCalendar } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Quotation, QuotationItem } from '../../models/Quotation';
 import { Customer } from '../../models/Customer';

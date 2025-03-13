@@ -5,7 +5,7 @@ import Layout from '../components/layout/Layout';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import { useQuotation } from '../context/QuotationContext';
-import MigrationTool from '../components/MigrationTOol'; // Adicionar essa linha
+import MigrationTool from '../components/MigrationTool'; // Adicionar essa linha
 
 
 const Settings: React.FC = () => {
