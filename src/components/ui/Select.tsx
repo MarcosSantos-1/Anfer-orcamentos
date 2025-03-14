@@ -22,15 +22,18 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-lg font-medium text-gray-700 mb-1">
           {label}
         </label>
       )}
+
       <select
         ref={ref}
         className={`
-          block w-full rounded-md border-gray-300 shadow-sm 
-          focus:border-red-500 focus:ring-red-500 sm:text-sm
+          block w-full rounded-xl border-2 bg-white/50 text-md
+          px-2 py-1 text-gray-900  ring-1 ring-transparent disabled:bg-gray-100 disabled:cursor-not-allowed
+          transition-all duration-200 ease-in-out
+          focus:border-blue-500 focus:ring-blue-500 sm:text-lg
           ${error ? 'border-red-300' : 'border-gray-300'}
           ${className}
         `}

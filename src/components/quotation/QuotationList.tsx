@@ -1,7 +1,11 @@
 // src/components/quotation/QuotationList.tsx
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiPlus, FiSearch, FiEye, FiEdit, FiTrash, FiPrinter, FiDownload } from 'react-icons/fi';
+import { FiSearch } from 'react-icons/fi';
+import { SiQuicklook } from "react-icons/si";
+import { MdEditDocument } from "react-icons/md";
+import { FaDownload, FaPlus, FaTrash } from "react-icons/fa6";
+
 import { useQuotation } from '../../context/QuotationContext';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
@@ -61,12 +65,6 @@ const QuotationList: React.FC = () => {
     }
   };
 
-  const handlePrintQuotation = (id: string) => {
-    const quotation = quotations.find(q => q.id === id);
-    if (quotation) {
-      generatePDF(quotation, true);
-    }
-  };
 
   const handleDownloadQuotation = (id: string) => {
     const quotation = quotations.find(q => q.id === id);
@@ -78,23 +76,23 @@ const QuotationList: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Orçamentos</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Orçamentos</h1>
         <Button
           onClick={() => navigate('/quotations/new')}
-          leftIcon={<FiPlus />}
+          leftIcon={<FaPlus  />}
         >
           Novo Orçamento
         </Button>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-3xl p-6 ">
         <div className="flex mb-6">
           <Input
             placeholder="Buscar por número, cliente ou data..."
             value={searchTerm}
             onChange={handleSearch}
             leftIcon={<FiSearch className="text-gray-400" />}
-            className="max-w-md"
+            className="max-w-md h-10 text-lg font-medium"
           />
         </div>
 
@@ -104,7 +102,7 @@ const QuotationList: React.FC = () => {
             <Button
               onClick={() => navigate('/quotations/new')}
               variant="outline"
-              leftIcon={<FiPlus />}
+              leftIcon={<FaPlus  />}
             >
               Criar primeiro orçamento
             </Button>
@@ -114,19 +112,19 @@ const QuotationList: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-lg font-medium text-gray-600 uppercase tracking-wider">
                     Nº
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-lg font-medium text-gray-600 uppercase tracking-wider">
                     Data
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-lg font-medium text-gray-600 uppercase tracking-wider">
                     Cliente
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-lg font-medium text-gray-600 uppercase tracking-wider">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-lg font-medium text-gray-600 uppercase tracking-wider">
                     Ações
                   </th>
                 </tr>
@@ -135,61 +133,54 @@ const QuotationList: React.FC = () => {
                 {sortedQuotations.map((quotation) => (
                   <tr key={quotation.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-md font-medium text-gray-900">
                         {quotation.number}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-md text-gray-6  00">
                         {formatDate(quotation.date)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-900">
+                      <span className="text-lg text-gray-900">
                         {quotation.customer.name}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-md font-medium text-gray-900">
                        {formatCurrency(quotation.total)} 
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="flex justify-center space-x-2">
+                      <div className="flex justify-center space-x-4">
                         <button
                           onClick={() => handleViewQuotation(quotation.id)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-indigo-600 hover:text-indigo-900 text-xl duration-200"
                           title="Visualizar"
                         >
-                          <FiEye />
+                          <SiQuicklook  />
                         </button>
                         <button
                           onClick={() => handleEditQuotation(quotation.id)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-yellow-600 hover:text-yellow-900 text-xl duration-200"
                           title="Editar"
                         >
-                          <FiEdit />
-                        </button>
-                        <button
-                          onClick={() => handlePrintQuotation(quotation.id)}
-                          className="text-green-600 hover:text-green-900"
-                          title="Imprimir"
-                        >
-                          <FiPrinter />
+                          <MdEditDocument />
                         </button>
                         <button
                           onClick={() => handleDownloadQuotation(quotation.id)}
-                          className="text-purple-600 hover:text-purple-900"
+                          className="text-purple-600 hover:text-purple-900 text-xl duration-200"
                           title="Download PDF"
                         >
-                          <FiDownload />
+                          <FaDownload />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(quotation.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-600 hover:text-red-900 text-xl duration-200"
                           title="Excluir"
                         >
-                          <FiTrash />
+                          <FaTrash />
                         </button>
                       </div>
                     </td>
@@ -218,7 +209,7 @@ const QuotationList: React.FC = () => {
             <Button
               variant="danger"
               onClick={confirmDelete}
-              leftIcon={<FiTrash />}
+              leftIcon={<FaTrash />}
             >
               Excluir
             </Button>

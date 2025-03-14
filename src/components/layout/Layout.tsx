@@ -1,7 +1,6 @@
 // src/components/layout/Layout.tsx
 import React from 'react';
 import Header from './Header';
-import Footer from './Footer';
 import Sidebar from './Sidebar';
 
 interface LayoutProps {
@@ -11,20 +10,18 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, showSidebar = true }) => {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 ">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
       
-      <div className="flex flex-1">
-        {showSidebar && <Sidebar />}
-        
-        <main className={`flex-1  ${showSidebar ? 'lg:mx-auto lg:px-20 pb-10' : ''}`}>
-          <div className="pt-6 ">
-            {children}
-          </div>
-        </main>
-      </div>
+      {/* Incluindo o Sidebar diretamente (ele já está posicionado fixo) */}
+      {showSidebar && <Sidebar />}
       
-      <Footer />
+      {/* Conteúdo principal com padding para acomodar o header e sidebar */}
+      <main className={`flex-1 ${showSidebar ? 'lg:ml-64' : ''} mt-[66px]`}>
+        <div className={`pt-6 ${showSidebar ? 'lg:px-20' : 'px-4'} pb-10`}>
+          {children}
+        </div>
+      </main>
     </div>
   );
 };

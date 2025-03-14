@@ -1,6 +1,7 @@
 // src/pages/Dashboard.tsx
 import React, { useMemo } from 'react';
 import { FiFileText, FiUsers, FiPackage, FiPlus, FiArrowRight } from 'react-icons/fi';
+import { SiQuicklook } from "react-icons/si";
 import { Link } from 'react-router-dom';
 import { useQuotation } from '../context/QuotationContext';
 import Layout from '../components/layout/Layout';
@@ -13,25 +14,25 @@ const Dashboard: React.FC = () => {
   // Cálculos para o dashboard
   const stats = useMemo(() => {
     const totalQuotations = quotations.length;
-    
+
     // Total de orçamentos este mês
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
-    
+
     const thisMonthQuotations = quotations.filter(quotation => {
       const date = new Date(quotation.date);
       return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
     });
-    
+
     const quotationsThisMonth = thisMonthQuotations.length;
-    
+
     // Valor total de orçamentos
     const totalValue = quotations.reduce((sum, quotation) => sum + quotation.total, 0);
-    
+
     // Valor médio dos orçamentos
     const averageValue = totalQuotations > 0 ? totalValue / totalQuotations : 0;
-    
+
     return {
       totalQuotations,
       quotationsThisMonth,
@@ -51,7 +52,7 @@ const Dashboard: React.FC = () => {
     <Layout>
       <div className="container mx-auto px-4">
         <h1 className="text-2xl font-bold mb-6">Página</h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Card de Orçamentos */}
           <div className="bg-white rounded-lg shadow p-6">
@@ -71,7 +72,7 @@ const Dashboard: React.FC = () => {
               Ver todos <FiArrowRight className="ml-1" />
             </Link>
           </div>
-          
+
           {/* Card de Clientes */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -87,7 +88,7 @@ const Dashboard: React.FC = () => {
               Ver todos <FiArrowRight className="ml-1" />
             </Link>
           </div>
-          
+
           {/* Card de Produtos */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -103,7 +104,7 @@ const Dashboard: React.FC = () => {
               Ver todos <FiArrowRight className="ml-1" />
             </Link>
           </div>
-          
+
           {/* Card de Valor */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -120,20 +121,20 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Orçamentos Recentes */}
         <div className="bg-white rounded-lg shadow mb-8">
           <div className="p-6 border-b border-gray-200">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-medium">Orçamentos Recentes</h2>
+              <h2 className="text-xl font-medium">Orçamentos Recentes</h2>
               <Link to="/quotations/new">
-                <Button leftIcon={<FiPlus />} size="sm">
+                <Button leftIcon={<FiPlus />} size="lg">
                   Novo Orçamento
                 </Button>
               </Link>
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             {recentQuotations.length === 0 ? (
               <div className="text-center py-12">
@@ -148,20 +149,20 @@ const Dashboard: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-lg font-bold text-gray-600 uppercase tracking-wider">
                       Nº
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-lg font-bold text-gray-600 uppercase tracking-wider">
                       Data
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-lg font-bold text-gray-600 uppercase tracking-wider">
                       Cliente
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-lg font-bold text-gray-600 uppercase tracking-wider">
                       Total
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ações
+                    <th className="px-6 py-3 text-right text-lg font-bold text-gray-600 uppercase tracking-wider">
+                      
                     </th>
                   </tr>
                 </thead>
@@ -169,28 +170,29 @@ const Dashboard: React.FC = () => {
                   {recentQuotations.map((quotation) => (
                     <tr key={quotation.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-lg font-medium text-gray-900">
                           {quotation.number}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-lg text-gray-500">
                           {new Date(quotation.date).toLocaleDateString('pt-BR')}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">
+                        <span className="text-lg text-gray-900">
                           {quotation.customer.name}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-lg font-medium text-gray-900">
                           {formatCurrency(quotation.total)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <Link to={`/quotations/${quotation.id}`} className="text-indigo-600 hover:text-indigo-900">
-                          Ver detalhes
+                      <td className="px-6 py-4 whitespace-nowrap flex flex-row items-center gap-2 justify-center text-right">
+                        <Link to={`/quotations/${quotation.id}`} className="text-purple-600 hover:text-purple-900 flex items-center duration-200 gap-2">
+                          <SiQuicklook />
+                          <span className='font-semibold text-lg'>Ver detalhes</span>
                         </Link>
                       </td>
                     </tr>

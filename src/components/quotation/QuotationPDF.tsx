@@ -11,25 +11,25 @@ const QuotationPDF: React.FC<{ quotation: Quotation }> = ({ quotation }) => {
     <div className="bg-white p-0 max-w-4xl mx-auto print-content">
       {/* Cabeçalho com fundo preto e onda */}
       <div className="relative">
-        <div className="bg-gray-900 text-white p-8 pb-24">
+        <div className="bg-zinc-900 text-white p-8 pb-10">
           <div className="flex justify-between items-start">
             {/* Logo e nome da empresa */}
-            <div className="flex items-center">
-              <img src={logoImg} alt="ANFER" className="w-24 h-24 mr-4" />
+            <div className="flex items-center flex-col">
+              <img src={logoImg} alt="ANFER" className="w-36 h-36 mr-4" />
               <div>
                 <h1 className="text-2xl font-bold mt-2">ANFER <span className="font-normal">ESQUADRIAS</span></h1>
               </div>
             </div>
             
             {/* Informações de contato */}
-            <div className="text-right">
+            <div className="text-center space-y-4">
               <div className="mb-4">
                 <p className="text-yellow-500 font-semibold">Contato</p>
                 <p className="text-sm">(11) 94009-3757</p>
               </div>
               <div className="mb-4">
                 <p className="text-yellow-500 font-semibold">e-Mail</p>
-                <p className="text-sm">anfer.esquadrias@gmail.com</p>
+                <p className="text-sm">oficial.anferesquadrias@gmail.com</p>
               </div>
             </div>
             
@@ -134,9 +134,26 @@ const QuotationPDF: React.FC<{ quotation: Quotation }> = ({ quotation }) => {
       </div>
       
       {/* Resumo financeiro */}
-      <div className="px-8 mt-4">
+<div className='flex w-full '>
+      <div className="px-8 mt-6 mb-8 w-1/2">
+        <div className="flex justify-between items-center">
+          {/* Dados de pagamento */}
+          <div className="w-full">
+            <h3 className="font-bold text-lg uppercase mb-2">Dados para pagamento</h3>
+            <p>{quotation.paymentInfo.name}</p>
+            <p><span className="font-semibold">Agência:</span> {quotation.paymentInfo.agency}</p>
+            <p><span className="font-semibold">CC:</span> {quotation.paymentInfo.account}</p>
+            <p><span className="font-semibold">PIX (CNPJ):</span> {quotation.paymentInfo.pix}</p>
+          </div>
+          
+          {/* Total Geral */}
+
+        </div>
+      </div>
+
+      <div className="px-8 mt-4 w-1/2 flex-col">
         <div className="flex justify-end">
-          <div className="w-1/2">
+          <div className="w-full">
             <div className="flex justify-between py-2">
               <span>Sub Total</span>
               <span className="font-bold"> {formatCurrency(quotation.subtotal)}</span>
@@ -151,27 +168,13 @@ const QuotationPDF: React.FC<{ quotation: Quotation }> = ({ quotation }) => {
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Total Geral */}
-      <div className="px-8 mt-6 mb-8">
-        <div className="flex justify-between items-center">
-          {/* Dados de pagamento */}
-          <div className="w-1/2">
-            <h3 className="font-bold text-lg uppercase mb-2">Dados para pagamento</h3>
-            <p>{quotation.paymentInfo.name}</p>
-            <p><span className="font-semibold">Agência:</span> {quotation.paymentInfo.agency}</p>
-            <p><span className="font-semibold">CC:</span> {quotation.paymentInfo.account}</p>
-            <p><span className="font-semibold">PIX (CNPJ):</span> {quotation.paymentInfo.pix}</p>
-          </div>
-          
-          {/* Total Geral */}
-          <div className="bg-red-700 text-white p-4 w-1/2 flex justify-between">
+        <div className="bg-red-700 text-white p-4 w-ful flex justify-between">
             <span className="font-bold text-lg uppercase">Total Geral</span>
             <span className="font-bold text-lg">{formatCurrency(quotation.total)}</span>
-          </div>
-        </div>
+          </div>  
       </div>
+
+</div>
       
       {/* Assinatura */}
      {/* <div className="px-8 mt-6 text-center">

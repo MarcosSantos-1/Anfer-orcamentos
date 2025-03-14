@@ -19,7 +19,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-lg font-medium text-gray-700 mb-3">
           {label}
         </label>
       )}
@@ -29,18 +29,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
             {leftIcon}
           </div>
         )}
-        <input
-          ref={ref}
-          className={`
-            block w-full rounded-md border-gray-300 shadow-sm 
-            focus:border-red-500 focus:ring-red-500 sm:text-sm
-            ${leftIcon ? 'pl-10' : ''}
-            ${rightIcon ? 'pr-10' : ''}
-            ${error ? 'border-red-300' : 'border-gray-300'}
-            ${className}
-          `}
-          {...props}
-        />
+       <input
+        ref={ref}
+        className={`
+          block w-full rounded-xl border-2 bg-white/50
+          px-2 py-1 text-gray-900 
+          ring-1 ring-transparent
+          transition-all duration-200 ease-in-out
+          focus:border-blue-500 focus:ring-4 focus:ring-blue-200
+          disabled:bg-gray-100 disabled:cursor-not-allowed
+          ${leftIcon ? 'pl-12' : ''}
+          ${rightIcon ? 'pr-12' : ''}
+          ${error ? 'border-red-400 focus:border-red-500 focus:ring-red-200' : 'border-gray-200'}
+          ${className}
+        `}
+        {...props}
+      />
         {rightIcon && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             {rightIcon}

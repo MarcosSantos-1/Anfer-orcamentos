@@ -5,10 +5,14 @@ import { Quotation } from '../models/Quotation';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import logoImg from '../assets/images/logo.png'; // Importe as imagens diretamente
 import waveImg from '../assets/images/wave.png';
+import { firebaseSettingsService } from './firebase';
 
 // Função para gerar o PDF a partir do orçamento
 export const generatePDF = async (quotation: Quotation, shouldPrint: boolean = false) => {
   try {
+    // Obter as configurações atualizadas
+    const settings = await firebaseSettingsService.get();
+    
     // Adicionar a fonte Poppins ao documento
     const fontLink = document.createElement('link');
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
@@ -20,7 +24,7 @@ export const generatePDF = async (quotation: Quotation, shouldPrint: boolean = f
     
     // Criar o elemento com o conteúdo do orçamento
     const element = document.createElement('div');
-    element.innerHTML = generateHTML(quotation);
+    element.innerHTML = generateHTML(quotation, settings);
     document.body.appendChild(element);
     
     // Configurar o elemento para ficar visível mas fora da tela
@@ -61,7 +65,7 @@ export const generatePDF = async (quotation: Quotation, shouldPrint: boolean = f
     pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
     
     // Definir o nome do arquivo
-    const fileName = `Orcamento-${quotation.number}-${quotation.customer.name.replace(/\s+/g, '-')}.pdf`;
+    const fileName = `ANFER Orçamento -${quotation.number}-${quotation.customer.name.replace(/\s+/g, '-')}.pdf`;
     
     if (shouldPrint) {
       // Abrir o PDF em uma nova janela para impressão
@@ -79,7 +83,23 @@ export const generatePDF = async (quotation: Quotation, shouldPrint: boolean = f
 };
 
 // Função para gerar HTML para o PDF
-const generateHTML = (quotation: Quotation): string => {
+const generateHTML = (quotation: Quotation, settings: any): string => {
+  // Extrair as configurações da empresa
+  const companyName = settings.companyName || 'ANFER ESQUADRIAS';
+  const companyContact = settings.contact || '(11) 94009-3757';
+  const companyEmail = settings.email || 'anfer.esquadrias@gmail.com';
+  const companyAddress = settings.address || 'Rua Rio Meriti, 120 - São Miguel - pta. São Paulo';
+  const companyWebsite = settings.website || 'anfer-website.vercel.app';
+  
+  // Dividir o nome da empresa para estilização
+  let [mainName, ...restOfName] = companyName.split(' ');
+  const restName = restOfName.join(' ');
+
+  // Dividir o endereço para melhor apresentação
+  const addressParts = companyAddress.split('-');
+  const addressLine1 = addressParts[0] + (addressParts.length > 1 ? '-' + addressParts[1] : '');
+  const addressLine2 = addressParts.length > 2 ? addressParts.slice(2).join('-') : '';
+  
   return `
     <!DOCTYPE html>
     <html>
@@ -114,7 +134,8 @@ const generateHTML = (quotation: Quotation): string => {
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          padding-left: 50px;
+          padding-left: 30px;
+
         }
         
         .logo {
@@ -131,6 +152,7 @@ const generateHTML = (quotation: Quotation): string => {
           font-size: 20px;
           font-weight: bold;
           color: #fff;
+          widht: 15 0px;
 
         }
         
@@ -317,23 +339,23 @@ const generateHTML = (quotation: Quotation): string => {
       <div class="header">
         <div class="header-content">
           <div class="logo-container">
-            <img src="${logoImg}" class="logo" alt="ANFER">
-            <div class="company-name">ANFER <span>ESQUADRIAS</span></div>
+            <img src="${logoImg}" class="logo" alt="${mainName}">
+            <div class="company-name">${mainName} <span>${restName}</span></div>
           </div>
           
           <div class="contact-info">
             <div class="contact-label">Contato</div>
-            <div>(11) 94009-3757</div>
+            <div>${companyContact}</div>
             <div class="contact-label" style="margin-top: 15px;">e-Mail</div>
-            <div>anfer.esquadrias@gmail.com</div>
+            <div>${companyEmail}</div>
           </div>
           
           <div class="contact-info">
             <div class="contact-label">Endereço:</div>
-            <div>Rua Rio Meriti, 120 - São Miguel -</div>
-            <div>pta. São Paulo</div>
+            <div>${addressLine1}</div>
+            <div>${addressLine2}</div>
             <div class="contact-label" style="margin-top: 15px;">Web:</div>
-            <div>anfer-website.vercel.app</div>
+            <div>${companyWebsite}</div>
           </div>
         </div>
       </div>

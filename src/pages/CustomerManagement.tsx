@@ -89,7 +89,7 @@ const CustomerManagement: React.FC = () => {
     <Layout>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Clientes</h1>
+          <h1 className="text-3xl font-bold">Clientes</h1>
           <Button
             onClick={handleAddCustomer}
             leftIcon={<FiPlus />}
@@ -105,7 +105,7 @@ const CustomerManagement: React.FC = () => {
               value={searchTerm}
               onChange={handleSearch}
               leftIcon={<FiSearch className="text-gray-400" />}
-              className="max-w-md"
+              className="max-w-md h-10"
             />
           </div>
           
@@ -125,19 +125,19 @@ const CustomerManagement: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Nome
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Endereço
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Contato
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       E-mail
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
@@ -145,41 +145,41 @@ const CustomerManagement: React.FC = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredCustomers.map((customer) => (
                     <tr key={customer.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4">
+                        <span className="text-base font-medium text-gray-900 whitespace-normal break-words">
                           {customer.name}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-500">
+                      <td className="px-6 py-4">
+                        <span className="text-base text-gray-500 whitespace-normal break-words">
                           {customer.address}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-500">
+                      <td className="px-6 py-4">
+                        <span className="text-base text-gray-500 whitespace-normal break-words">
                           {customer.contact}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-500">
+                      <td className="px-6 py-4">
+                        <span className="text-base text-gray-500 whitespace-normal break-words">
                           {customer.email}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="flex justify-center space-x-2">
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex justify-center space-x-4">
                           <button
                             onClick={() => handleEditCustomer(customer)}
                             className="text-blue-600 hover:text-blue-900"
                             title="Editar"
                           >
-                            <FiEdit />
+                            <FiEdit className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => handleDeleteClick(customer.id)}
                             className="text-red-600 hover:text-red-900"
                             title="Excluir"
                           >
-                            <FiTrash />
+                            <FiTrash className="w-5 h-5" />
                           </button>
                         </div>
                       </td>

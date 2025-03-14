@@ -1,13 +1,25 @@
 // src/pages/ProductManagement.tsx
-import React, { useState } from 'react';
-import { FiPlus, FiEdit, FiTrash, FiSearch, FiSave } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiSearch, FiSave, FiTool, FiPackage } from 'react-icons/fi';
+import { MdEditDocument } from "react-icons/md";
+import { FaDownload, FaPlus, FaTrash } from "react-icons/fa6";
+
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import Select from '../components/ui/Select';
 import Modal from '../components/ui/Modal';
 import { useQuotation } from '../context/QuotationContext';
 import { Product } from '../models/Product';
 import { v4 as uuidv4 } from 'uuid';
+import { formatCurrency } from '../utils/formatters';
+import Textarea from '../components/ui/Textarea';
+
+// Define tipos de produtos
+const PRODUCT_TYPES = {
+  SERVICE: 'Serviço',
+  MANUFACTURING: 'Fabricação'
+};
 
 const ProductManagement: React.FC = () => {
   const { products, saveProduct, deleteProduct } = useQuotation();
@@ -16,26 +28,56 @@ const ProductManagement: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('all');
   
-  const [formData, setFormData] = useState<Product>({
+  const [formData, setFormData] = useState<Product & { type?: string }>({
     id: '',
     description: '',
     defaultPrice: 0,
-    category: ''
+    category: '',
+    type: PRODUCT_TYPES.SERVICE
   });
   
+  // Estender o modelo de produtos para incluir o tipo (serviço ou fabricação)
+  // Isso é feito apenas na memória para demonstração, sem alterar a estrutura do banco de dados
+  const [extendedProducts, setExtendedProducts] = useState<(Product & { type: string })[]>([]);
+  
+  useEffect(() => {
+    // Categoriza produtos de acordo com padrões no nome/categoria
+    const categorized = products.map(product => {
+      const isService = 
+        product.category.toUpperCase().includes('REPROGRAMAÇÃO') || 
+        product.category.toUpperCase().includes('SERVIÇO') ||
+        product.description.toUpperCase().includes('SERVIÇO') ||
+        product.category.toUpperCase().includes('INSTALAÇÃO');
+        
+      return {
+        ...product,
+        type: isService ? PRODUCT_TYPES.SERVICE : PRODUCT_TYPES.MANUFACTURING
+      };
+    });
+    
+    setExtendedProducts(categorized);
+  }, [products]);
+  
   // Filtrar produtos
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = extendedProducts.filter(product => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch = 
       product.description.toLowerCase().includes(searchLower) ||
       product.category.toLowerCase().includes(searchLower) ||
-      product.defaultPrice.toString().includes(searchLower)
-    );
+      product.defaultPrice.toString().includes(searchLower);
+      
+    // Filtra por tipo (serviço ou fabricação) ou mostra todos
+    if (activeTab === 'all') return matchesSearch;
+    if (activeTab === 'service') return matchesSearch && product.type === PRODUCT_TYPES.SERVICE;
+    if (activeTab === 'manufacturing') return matchesSearch && product.type === PRODUCT_TYPES.MANUFACTURING;
+    
+    return matchesSearch;
   });
   
   // Agrupar produtos por categoria
-  const groupedProducts = filteredProducts.reduce<Record<string, Product[]>>((acc, product) => {
+  const groupedProducts = filteredProducts.reduce<Record<string, (Product & { type: string })[]>>((acc, product) => {
     const category = product.category || 'Sem Categoria';
     if (!acc[category]) {
       acc[category] = [];
@@ -54,12 +96,13 @@ const ProductManagement: React.FC = () => {
       id: '',
       description: '',
       defaultPrice: 0,
-      category: ''
+      category: '',
+      type: PRODUCT_TYPES.SERVICE
     });
     setIsModalOpen(true);
   };
   
-  const handleEditProduct = (product: Product) => {
+  const handleEditProduct = (product: Product & { type: string }) => {
     setSelectedProduct(product);
     setFormData({ ...product });
     setIsModalOpen(true);
@@ -78,20 +121,30 @@ const ProductManagement: React.FC = () => {
     }
   };
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: name === 'defaultPrice' ? parseFloat(value) || 0 : value 
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'defaultPrice' ? parseFloat(value) || 0 : value
     }));
   };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Adiciona o tipo ao nome da categoria para melhor organização
+    let category = formData.category;
+    if (formData.type && !category.includes(formData.type)) {
+      category = `${formData.type} - ${category}`;
+    }
+    
     saveProduct({
-      ...formData,
-      id: formData.id || uuidv4()
+      id: formData.id || uuidv4(),
+      description: formData.description,
+      defaultPrice: formData.defaultPrice,
+      category: category
     });
+    
     setIsModalOpen(false);
   };
   
@@ -99,87 +152,104 @@ const ProductManagement: React.FC = () => {
     <Layout>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Produtos e Serviços</h1>
+          <h1 className="text-3xl font-bold">Produtos e Serviços</h1>
           <Button
             onClick={handleAddProduct}
-            leftIcon={<FiPlus />}
+            leftIcon={<FaPlus />}
+            className="text-lg py-3 px-6"
           >
             Novo Produto
           </Button>
         </div>
         
         <div className="bg-white shadow rounded-lg p-6">
-          <div className="flex mb-6">
+          <div className="mb-6 flex flex-col  md:flex-row justify-between items-start gap-4">
             <Input
               placeholder="Buscar por descrição, categoria ou preço..."
               value={searchTerm}
               onChange={handleSearch}
               leftIcon={<FiSearch className="text-gray-400" />}
-              className="max-w-md"
+              className="w-full max-w-3xl text-lg h-12"
             />
+            
+            {/* Tabs para filtrar por tipo */}
+            <div className="flex rounded-lg border border-gray-300">
+              <button
+                className={`px-6 py-3 text-lg font-medium ${activeTab === 'all' ? 'bg-red-700 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTab('all')}
+              >
+                Todos
+              </button>
+              <button
+                className={`px-6 py-3 text-lg font-medium flex items-center gap-2 ${activeTab === 'service' ? 'bg-red-700 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTab('service')}
+              >
+                <FiTool /> Serviços
+              </button>
+              <button
+                className={`px-6 py-3 text-lg font-medium flex items-center gap-2 ${activeTab === 'manufacturing' ? 'bg-red-700 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTab('manufacturing')}
+              >
+                <FiPackage /> Fabricação
+              </button>
+            </div>
           </div>
           
           {Object.keys(groupedProducts).length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">Nenhum produto encontrado.</p>
+              <p className="text-gray-500 mb-4 text-lg">Nenhum produto encontrado.</p>
               <Button
                 onClick={handleAddProduct}
                 variant="outline"
-                leftIcon={<FiPlus />}
+                leftIcon={<FaPlus />} 
+                className="text-lg py-3 px-6"
               >
                 Adicionar produto
               </Button>
             </div>
           ) : (
             <div className="space-y-8">
-              {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
+              {Object.entries(groupedProducts).map(([category, categoryProducts]) => {
+                // Determina o tipo da categoria a partir dos produtos
+                const categoryType = categoryProducts[0]?.type || PRODUCT_TYPES.MANUFACTURING;
+                const isService = categoryType === PRODUCT_TYPES.SERVICE;
+                
+                return (
                 <div key={category}>
-                  <h2 className="text-lg font-semibold px-6 py-2 bg-gray-100 rounded-t-lg mb-2">
+                  <h2 className={`text-xl font-semibold px-6 py-3 rounded-t-lg mb-2 flex items-center gap-2 ${isService ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
+                    {isService ? <FiTool className="text-xl" /> : <FiPackage className="text-xl" />}
                     {category}
                   </h2>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Descrição
-                          </th>
-                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Preço Padrão
-                          </th>
-                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Ações
-                          </th>
-                        </tr>
-                      </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {categoryProducts.map((product) => (
                           <tr key={product.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="text-sm font-medium text-gray-900">
+                            <td className="px-6 py-4 whitespace-normal w-3/5">
+                              <span className="text-lg font-medium text-gray-900">
                                 {product.description}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right">
-                              <span className="text-sm text-gray-500">
-                                R$ {product.defaultPrice.toFixed(2)}
+                            <td className="px-6 py-4 whitespace-nowrap text-right w-1/5">
+                              <span className="text-xl text-gray-800 font-medium">
+                                {formatCurrency(product.defaultPrice)}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-center">
-                              <div className="flex justify-center space-x-2">
+                            <td className="px-6 py-4 whitespace-nowrap text-center w-1/5">
+                              <div className="flex justify-center space-x-4">
                                 <button
                                   onClick={() => handleEditProduct(product)}
-                                  className="text-blue-600 hover:text-blue-900"
+                                  className="text-blue-600 hover:text-blue-900 text-2xl"
                                   title="Editar"
                                 >
-                                  <FiEdit />
+                                  <MdEditDocument />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteClick(product.id)}
-                                  className="text-red-600 hover:text-red-900"
+                                  className="text-red-600 hover:text-red-900 text-2xl"
                                   title="Excluir"
                                 >
-                                  <FiTrash />
+                                  <FaTrash />
                                 </button>
                               </div>
                             </td>
@@ -189,7 +259,7 @@ const ProductManagement: React.FC = () => {
                     </table>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </div>
@@ -205,20 +275,33 @@ const ProductManagement: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => setIsModalOpen(false)}
-              className="mr-3"
+              className="mr-3 text-lg py-2 px-4"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleSubmit}
               leftIcon={<FiSave />}
+              className="text-lg py-2 px-4"
             >
               Salvar
             </Button>
           </>
         }
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <Select
+            label="Tipo de Produto"
+            name="type"
+            value={formData.type || PRODUCT_TYPES.SERVICE}
+            onChange={handleChange}
+            options={[
+              { value: PRODUCT_TYPES.SERVICE, label: 'Serviço' },
+              { value: PRODUCT_TYPES.MANUFACTURING, label: 'Fabricação' }
+            ]}
+            className="text-lg"
+          />
+          
           <Input
             label="Categoria"
             name="category"
@@ -226,14 +309,19 @@ const ProductManagement: React.FC = () => {
             onChange={handleChange}
             required
             placeholder="Ex: CONTROLES CLONES, REPROGRAMAÇÃO..."
+            className="text-lg"
           />
-          <Input
+          
+          <Textarea
             label="Descrição"
             name="description"
             value={formData.description}
             onChange={handleChange}
             required
+            className="text-lg"
+            rows={4}
           />
+          
           <Input
             label="Preço Padrão (R$)"
             name="defaultPrice"
@@ -243,6 +331,7 @@ const ProductManagement: React.FC = () => {
             value={formData.defaultPrice.toString()}
             onChange={handleChange}
             required
+            className="text-lg"
           />
         </form>
       </Modal>
@@ -257,22 +346,23 @@ const ProductManagement: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="mr-3"
+              className="mr-3 text-lg py-2 px-4"
             >
               Cancelar
             </Button>
             <Button
               variant="danger"
               onClick={confirmDelete}
-              leftIcon={<FiTrash />}
+              leftIcon={<FaTrash />}
+              className="text-lg py-2 px-4"
             >
               Excluir
             </Button>
           </>
         }
       >
-        <p>Tem certeza que deseja excluir este produto?</p>
-        <p className="text-sm text-gray-500 mt-2">Esta ação não pode ser desfeita.</p>
+        <p className="text-lg">Tem certeza que deseja excluir este produto?</p>
+        <p className="text-base text-gray-500 mt-3">Esta ação não pode ser desfeita.</p>
       </Modal>
     </Layout>
   );
