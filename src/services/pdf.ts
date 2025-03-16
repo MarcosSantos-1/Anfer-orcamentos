@@ -354,8 +354,8 @@ const generateHTML = (quotation: Quotation, settings: any): string => {
             <div class="contact-label">Endereço:</div>
             <div>${addressLine1}</div>
             <div>${addressLine2}</div>
-            <div class="contact-label" style="margin-top: 15px;">Web:</div>
-            <div>${companyWebsite}</div>
+            <div class="contact-label" style="margin-top: 15px;">CNPJ:</div>
+            <div>${quotation.paymentInfo.pix}</div>
           </div>
         </div>
       </div>

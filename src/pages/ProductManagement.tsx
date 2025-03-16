@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiSearch, FiSave, FiTool, FiPackage } from 'react-icons/fi';
 import { MdEditDocument } from "react-icons/md";
-import { FaDownload, FaPlus, FaTrash } from "react-icons/fa6";
+import { FaPlus, FaTrash } from "react-icons/fa6";
 
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
@@ -303,7 +303,7 @@ const ProductManagement: React.FC = () => {
           />
           
           <Input
-            label="Categoria"
+            label="Título"
             name="category"
             value={formData.category}
             onChange={handleChange}

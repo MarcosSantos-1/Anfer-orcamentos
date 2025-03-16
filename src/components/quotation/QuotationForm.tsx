@@ -311,7 +311,7 @@ const ProductItemModal: React.FC<ProductItemModalProps> = ({
         </div>
 
         <Select
-          label="Categoria/Produto"
+          label="Serviço/ Fabricação"
           value={selectedCategory}
           onChange={handleSelectCategory}
           options={[
